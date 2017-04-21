@@ -1,6 +1,7 @@
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -20,7 +21,7 @@ import java.util.logging.Logger;
 public class Parser {
     
     File instructionSet;
-    Map<String, Integer> mappedInstructions;
+    Map<String, String[]> mappedInstructions;
     Map<String, Integer> lookUpTable;
     
     Parser(File instructionSet) {
@@ -40,8 +41,9 @@ public class Parser {
         
         while(sc.hasNext()) {
             line = sc.nextLine();
-            tokens = line.split(" ");
-            mappedInstructions.put(tokens[0], Integer.parseInt(tokens[1], 2));
+            tokens = line.split(" +");
+            
+            mappedInstructions.put(tokens[0], Arrays.copyOfRange(tokens, 1, tokens.length));
         }
         sc.close();
     }
@@ -49,18 +51,25 @@ public class Parser {
     public void firstPass(File assembly) throws FileNotFoundException {
         Scanner sc = new Scanner(assembly);
         String line;
-        String delims = "[ ]";
         String []tokens;
-        int lineNumber = 0;
+        String token;
+        int lineNumber = 1;
         
         while(sc.hasNext()) {
             line = sc.nextLine();
             line = line.trim();
-            tokens = line.split(delims);
+            tokens = line.split(" ");
             
             if (tokens.length > 0) {
-                if(tokens[0].contains(":")) {
-                    
+                token = tokens[0];
+                if (token.contains(":")) {
+                    lookUpTable.put(token.substring(0, token.length() - 1), lineNumber);
+                    if (tokens.length > 1) {
+                        token = tokens[1];
+                    }
+                }
+                if (mappedInstructions.containsKey(token)) {
+                    ++lineNumber;
                 }
             }
         }
