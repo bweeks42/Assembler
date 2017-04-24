@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 public class Parser {
     
     File instructionSet;
-    Map<String, String[]> mappedInstructions;
+    Map<String, Instruction> mappedInstructions;
     Map<String, Integer> lookUpTable;
     
     Parser(File instructionSet) {
@@ -39,11 +39,38 @@ public class Parser {
         String line;
         String []tokens;
         
+        // elements of a command
+        String name;
+        Instruction.Type type;
+        int opcode;
+        int shamt;
+        int funct;
+        
+        Instruction entry;
+        
         while(sc.hasNext()) {
             line = sc.nextLine();
             tokens = line.split(" +");
             
-            mappedInstructions.put(tokens[0], Arrays.copyOfRange(tokens, 1, tokens.length));
+            // break up line
+            name = tokens[0];
+            
+            switch(tokens[1]) {
+                case "R":
+                    type = Instruction.Type.R;
+                    break;
+                case "I":
+                    type = Instruction.Type.I;
+                    break;
+                case "J":
+                    type = Instruction.Type.J;
+                    break;
+                    
+            }
+            
+          
+            
+            this.mappedInstructions.put(name, entry);
         }
         sc.close();
     }
